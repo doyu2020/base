@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Dybee\Base\Common;
 
-use Hyperf\HttpMessage\Stream\SwooleStream;
-use Hyperf\Utils\Codec\Json;
 use Psr\Container\ContainerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
+
 class Response
 {
     /**
@@ -20,15 +19,14 @@ class Response
     }
 
     /**
-     * @return mixed
+     * @return \Psr\Http\Message\ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function success()
     {
         $response = $this->container->get(ResponseInterface::class);
-        return $response->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withBody(new SwooleStream($this->json()));
+        return $response->json($this->json());
     }
 
     /**
@@ -43,8 +41,7 @@ class Response
     {
         $response = $this->container->get(ResponseInterface::class);
         $data = $this->json(0, $data, null, $total);
-        return $response->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withBody(new SwooleStream($data));
+        return $response->json($data);
     }
 
     /**
@@ -59,8 +56,7 @@ class Response
     {
         $response = $this->container->get(ResponseInterface::class);
         $data = $this->json($code, null, $msg);
-        return $response->withAddedHeader('content-type', 'application/json; charset=utf-8')
-            ->withBody(new SwooleStream($data));
+        return $response->json($data);
     }
 
     /**
@@ -68,10 +64,10 @@ class Response
      * @param $data
      * @param string|null $msg
      * @param int $total
-     * @return string
+     * @return array
      */
     private function json(int $code = 0, $data = null, string $msg = null, int $total = 0)
     {
-        return Json::encode(compact('code', 'data', 'msg', 'total'));
+        return compact('code', 'data', 'msg', 'total');
     }
 }
