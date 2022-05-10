@@ -45,7 +45,7 @@ class UserValidateAspect extends AbstractAspect
     {
         throw new AuthException(sprintf(
             '用户[%s]权限组[%s] 无权访问[%s:%s]',
-            $this->session->user_name, $this->session->user_name, $className, $methodName
+            $this->session->user_name, $this->session->user_access, $className, $methodName
         ));
     }
 
