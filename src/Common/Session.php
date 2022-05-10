@@ -33,8 +33,8 @@ class Session
         if ($user = $this->session->get(AuthCode::SESSION_USER_NAME)) {
             $user['canAdmin'] = $user['user_access'] >= 4;
             $user['canOperation'] = $user['user_access'] >= 3;
-            $user['canUser'] = $user['canUser'] >= 2;
-            $user['canDefault'] = $user['canDefault'] >= 1;
+            $user['canUser'] = $user['user_access'] >= 2;
+            $user['canDefault'] = $user['user_access'] >= 1;
             Context::set(AuthCode::SESSION_USER_NAME, $user);
             return;
         }
