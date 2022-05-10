@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Dybee\Base;
 
-class ErrorCode
+class AuthCode
 {
     /** @var string session键值 */
     const SESSION_USER_NAME = 'user_session';

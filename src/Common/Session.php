@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Dybee\Base\Common;
 
-use Dybee\Base\ErrorCode;
+use Dybee\Base\AuthCode;
 use Dybee\Base\Exception\BusinessException;
 use Hyperf\Context\Context;
 use Hyperf\Contract\SessionInterface;
@@ -30,15 +30,15 @@ class Session
      */
     public function initHandle(): void
     {
-        if ($user = $this->session->get(ErrorCode::SESSION_USER_NAME)) {
+        if ($user = $this->session->get(AuthCode::SESSION_USER_NAME)) {
             $user['canAdmin'] = $user['user_access'] >= 4;
             $user['canOperation'] = $user['user_access'] >= 3;
             $user['canUser'] = $user['canUser'] >= 2;
             $user['canDefault'] = $user['canDefault'] >= 1;
-            Context::set(ErrorCode::SESSION_USER_NAME, $user);
+            Context::set(AuthCode::SESSION_USER_NAME, $user);
             return;
         }
-        throw new BusinessException('请先登陆', ErrorCode::LOGIN_FAILED);
+        throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
     }
 
     /**
@@ -46,13 +46,13 @@ class Session
      */
     public function getUser(): array
     {
-        return Context::get(ErrorCode::SESSION_USER_NAME, []);
+        return Context::get(AuthCode::SESSION_USER_NAME, []);
     }
 
     public function __get($name)
     {
-        $user = Context::get(ErrorCode::SESSION_USER_NAME);
-        if (!$user) throw new BusinessException('请先登陆', ErrorCode::LOGIN_FAILED);
+        $user = Context::get(AuthCode::SESSION_USER_NAME);
+        if (!$user) throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
         return $user[$name] ?? throw new BusinessException(sprintf('USER_SESSION_NAME[%s]不存在', $name));
     }
 }
