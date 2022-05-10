@@ -40,6 +40,15 @@ class Session
         }
         throw new BusinessException('请先登陆', ErrorCode::LOGIN_FAILED);
     }
+
+    /**
+     * @return array
+     */
+    public function getUser(): array
+    {
+        return Context::get(ErrorCode::SESSION_USER_NAME, []);
+    }
+
     public function __get($name)
     {
         $user = Context::get(ErrorCode::SESSION_USER_NAME);
