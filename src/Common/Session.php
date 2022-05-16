@@ -1,6 +1,14 @@
 <?php
-declare(strict_types=1);
 
+declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 namespace Dybee\Base\Common;
 
 use Dybee\Base\AuthCode;
@@ -19,14 +27,22 @@ use Hyperf\Contract\SessionInterface;
  */
 class Session
 {
-
     public function __construct(private SessionInterface $session)
     {
     }
 
+    public function __get($name)
+    {
+        $user = Context::get(AuthCode::SESSION_USER_NAME);
+        if (! $user) {
+            throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
+        }
+        return $user[$name] ?? throw new BusinessException(sprintf('USER_SESSION_NAME[%s]不存在', $name));
+    }
+
     /**
-     * 中间件调用初始化用户session
-     * @return mixed
+     * 中间件调用初始化用户session.
+     * @return void
      */
     public function initHandle(): void
     {
@@ -36,23 +52,11 @@ class Session
             $user['canUser'] = $user['user_access'] >= 2;
             $user['canDefault'] = $user['user_access'] >= 1;
             Context::set(AuthCode::SESSION_USER_NAME, $user);
-            return;
         }
-        throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
     }
 
-    /**
-     * @return array
-     */
     public function getUser(): array
     {
         return Context::get(AuthCode::SESSION_USER_NAME, []);
-    }
-
-    public function __get($name)
-    {
-        $user = Context::get(AuthCode::SESSION_USER_NAME);
-        if (!$user) throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
-        return $user[$name] ?? throw new BusinessException(sprintf('USER_SESSION_NAME[%s]不存在', $name));
     }
 }
