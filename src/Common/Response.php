@@ -58,7 +58,13 @@ class Response
         $data = $this->json($code, null, $msg);
         return $response->json($data);
     }
-
+    /**
+     * @return ResponseInterface
+     */
+    public function athers()
+    {
+        return $this->container->get(ResponseInterface::class);
+    }
     /**
      * @param int $code
      * @param $data
