@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Dybee\Base\Common;
 
 use Dybee\Base\AuthCode;
-use Dybee\Base\Exception\BusinessException;
+use Dybee\Base\Exception\AuthException;
 use Hyperf\Context\Context;
 use Hyperf\Contract\SessionInterface;
 
@@ -35,9 +35,9 @@ class Session
     {
         $user = Context::get(AuthCode::SESSION_USER_NAME);
         if (! $user) {
-            throw new BusinessException('请先登陆', AuthCode::LOGIN_FAILED);
+            throw new AuthException('请先登陆', AuthCode::LOGIN_FAILED);
         }
-        return $user[$name] ?? throw new BusinessException(sprintf('USER_SESSION_NAME[%s]不存在', $name));
+        return $user[$name] ?? throw new AuthException(sprintf('USER_SESSION_NAME[%s]不存在', $name));
     }
 
     /**
