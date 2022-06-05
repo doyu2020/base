@@ -61,8 +61,13 @@ class Session
         return Context::get(AuthCode::SESSION_USER_NAME, []);
     }
 
-    public function setUser(array $data)
+    public function setUser(array $data): void
     {
         $this->session->set(AuthCode::SESSION_USER_NAME, $data);
+    }
+
+    public function logout(): void
+    {
+        $this->session->clear();
     }
 }
