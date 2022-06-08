@@ -41,7 +41,7 @@ class ResponseByUmi
     public function list($data, int $total)
     {
         $response = $this->container->get(ResponseInterface::class);
-        return $response->json($this->toJson(0, $data,null, $total));
+        return $response->json($this->toJson(0, $data, null, $total));
     }
 
     /**
@@ -92,9 +92,9 @@ class ResponseByUmi
         $showType = $errorCode != 0 ? 2 : 0;
         $success = $errorCode != 0 ? false : true;
         $page = 0;
-        if($total > 0) {
+        if ($total > 0) {
             $page = $this->container->get(PageInterface::class)->page;
         }
-        return compact('success', 'errorCode', 'data', 'errorMessage', 'showType','total','page');
+        return compact('success', 'errorCode', 'data', 'errorMessage', 'showType', 'total', 'page');
     }
 }
