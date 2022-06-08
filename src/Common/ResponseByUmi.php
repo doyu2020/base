@@ -41,14 +41,7 @@ class ResponseByUmi
     public function list($data, int $total)
     {
         $response = $this->container->get(ResponseInterface::class);
-        $page = $this->container->get(PageInterface::class);
-        $data = [
-            'list' => $data,
-            'current' => $page->page,
-            'pageSize' => $page->limit,
-            'total' => $total,
-        ];
-        return $response->json($this->toJson(0, $data));
+        return $response->json($this->toJson(0, $data,null, $total));
     }
 
     /**
@@ -88,16 +81,20 @@ class ResponseByUmi
     }
 
     /**
-     * @param int         $code
+     * @param int         $errorCode
      * @param             $data
-     * @param string|null $msg
+     * @param string|null $errorMessage
      * @param int         $total
      * @return array
      */
-    protected function toJson(int $errorCode = 0, $data = null, string $errorMessage = null)
+    protected function toJson(int $errorCode = 0, $data = null, string $errorMessage = null, int $total = 0)
     {
         $showType = $errorCode != 0 ? 2 : 0;
         $success = $errorCode != 0 ? false : true;
-        return compact('success', 'errorCode', 'data', 'errorMessage', 'showType');
+        $page = 0;
+        if($total > 0) {
+            $page = $this->container->get(PageInterface::class)->page;
+        }
+        return compact('success', 'errorCode', 'data', 'errorMessage', 'showType','total','page');
     }
 }
