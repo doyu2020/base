@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace Dybee\Base\Common;
 
-use Psr\Container\ContainerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 
-class Response
+class ResponseByUmi
 {
     /**
      * @var ContainerInterface
@@ -31,7 +30,7 @@ class Response
 
     /**
      * 输出业务数据
-     * @param $data
+     * @param     $data
      * @param int $total
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
@@ -47,17 +46,18 @@ class Response
     /**
      * 错误
      * @param string $msg
-     * @param int $code
+     * @param int    $code
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function error(string $msg, int $code = 1)
+    public function error(string $msg, int $code = 1, bool $success = true)
     {
         $response = $this->container->get(ResponseInterface::class);
         $data = $this->json($code, null, $msg);
         return $response->json($data);
     }
+
     /**
      * @return ResponseInterface
      */
@@ -65,15 +65,18 @@ class Response
     {
         return $this->container->get(ResponseInterface::class);
     }
+
     /**
-     * @param int $code
-     * @param $data
+     * @param int         $code
+     * @param             $data
      * @param string|null $msg
-     * @param int $total
+     * @param int         $total
      * @return array
      */
-    protected function json(int $code = 0, $data = null, string $msg = null, int $total = 0)
+    protected function json(int $errorCode = 0, $data = null, string $errorMessage = null, int $total = 0)
     {
-        return compact('code', 'data', 'msg', 'total');
+        $showType = $errorCode != 0 ? 2 : 0;
+        $success = $errorCode != 0 ? false : true;
+        return compact('success', 'errorCode', 'data', 'errorMessage', 'total', 'showType');
     }
 }
