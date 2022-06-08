@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Dybee\Base\Common;
 
+use Dybee\Base\PageInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
+use Psr\Container\ContainerInterface;
 
 class ResponseByUmi
 {
@@ -25,22 +27,41 @@ class ResponseByUmi
     public function success()
     {
         $response = $this->container->get(ResponseInterface::class);
-        return $response->json($this->json());
+        return $response->json($this->toJson());
     }
 
     /**
-     * 输出业务数据
+     * 输出业务List数据
      * @param     $data
      * @param int $total
      * @return ResponseInterface
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function data($data, int $total = 0)
+    public function list($data, int $total)
     {
         $response = $this->container->get(ResponseInterface::class);
-        $data = $this->json(0, $data, null, $total);
-        return $response->json($data);
+        $page = $this->container->get(PageInterface::class);
+        $data = [
+            'list' => $data,
+            'current' => $page->page,
+            'pageSize' => $page->limit,
+            'total' => $total,
+        ];
+        return $response->json($this->toJson(0, $data));
+    }
+
+    /**
+     * 输出业务数据
+     * @param array $data
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function data(array $data)
+    {
+        $response = $this->container->get(ResponseInterface::class);
+        return $response->json($this->toJson(0, $data));
     }
 
     /**
@@ -51,17 +72,17 @@ class ResponseByUmi
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function error(string $msg, int $code = 1, bool $success = true)
+    public function error(string $msg, int $code = 1)
     {
         $response = $this->container->get(ResponseInterface::class);
-        $data = $this->json($code, null, $msg);
+        $data = $this->toJson($code, null, $msg);
         return $response->json($data);
     }
 
     /**
      * @return ResponseInterface
      */
-    public function athers()
+    public function others()
     {
         return $this->container->get(ResponseInterface::class);
     }
@@ -73,10 +94,10 @@ class ResponseByUmi
      * @param int         $total
      * @return array
      */
-    protected function json(int $errorCode = 0, $data = null, string $errorMessage = null, int $total = 0)
+    protected function toJson(int $errorCode = 0, $data = null, string $errorMessage = null)
     {
         $showType = $errorCode != 0 ? 2 : 0;
         $success = $errorCode != 0 ? false : true;
-        return compact('success', 'errorCode', 'data', 'errorMessage', 'total', 'showType');
+        return compact('success', 'errorCode', 'data', 'errorMessage', 'showType');
     }
 }
