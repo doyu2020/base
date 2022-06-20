@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace Dybee\Base\Common;
 
 use Dybee\Base\PageInterface;
+use Hyperf\HttpMessage\Stream\SwooleStream;
 use Hyperf\HttpServer\Contract\ResponseInterface;
+use Hyperf\Utils\Context;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 class ResponseByUmi
 {
@@ -72,6 +75,17 @@ class ResponseByUmi
         return $response->json($data);
     }
 
+    /**
+     * 返回文件. 默认图片类型
+     * @param string $data
+     * @param string $type
+     * @return PsrResponseInterface
+     */
+    public function file(string $data, string $type = 'image/jpeg; charset=utf-8')
+    {
+        $response = Context::get(PsrResponseInterface::class);
+        return $response->withHeader('content-type', $type)->withBody(new SwooleStream($data));
+    }
     /**
      * @return ResponseInterface
      */
